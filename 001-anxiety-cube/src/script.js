@@ -5,6 +5,10 @@ const calm = "I am okay";
 const anxious = "I am nervous";
 const highAnxious = "Oh no no no!!!";
 
+const lowColor = "#70b77e";
+const mediumColor = "#E7EB90";
+const highColor = "#de369d";
+
 const canvas = document.querySelector("canvas.webgl");
 const anxietyLvl = document.querySelector(".anxiety");
 
@@ -66,10 +70,13 @@ const tick = () => {
 
 	if (intensity >= 0 && intensity <= 0.25) {
 		anxietyLvl.textContent = calm;
+		anxietyLvl.style.color = lowColor;
 	} else if (intensity > 0.25 && intensity <= 0.5) {
 		anxietyLvl.textContent = anxious;
+		anxietyLvl.style.color = mediumColor;
 	} else {
 		anxietyLvl.textContent = highAnxious;
+		anxietyLvl.style.color = highColor;
 	}
 
 	window.requestAnimationFrame(tick);
