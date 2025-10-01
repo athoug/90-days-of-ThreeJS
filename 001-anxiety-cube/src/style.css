@@ -14,4 +14,13 @@ canvas.webgl {
 	top: 0;
 	left: 0;
 	outline: none;
+	z-index: 1;
+}
+
+.anxiety {
+	color: aliceblue;
+	position: absolute;
+	top: 1em;
+	left: 1em;
+	z-index: 99;
 }

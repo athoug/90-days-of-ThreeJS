@@ -1,7 +1,12 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
+const calm = "I am okay";
+const anxious = "I am nervous";
+const highAnxious = "Oh no no no!!!";
+
 const canvas = document.querySelector("canvas.webgl");
+const anxietyLvl = document.querySelector(".anxiety");
 
 const size = {
 	width: window.innerWidth,
@@ -58,6 +63,14 @@ const tick = () => {
 
 	controls.update();
 	renderer.render(scene, camera);
+
+	if (intensity >= 0 && intensity <= 0.25) {
+		anxietyLvl.textContent = calm;
+	} else if (intensity > 0.25 && intensity <= 0.5) {
+		anxietyLvl.textContent = anxious;
+	} else {
+		anxietyLvl.textContent = highAnxious;
+	}
 
 	window.requestAnimationFrame(tick);
 };
