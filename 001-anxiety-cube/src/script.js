@@ -14,9 +14,10 @@ scene.background = new THREE.Color("#001");
 const geometry = new THREE.BoxGeometry(1, 1, 1);
 const material = new THREE.MeshBasicMaterial({
 	color: 0x3789f0,
-	wireframe: true,
+	// wireframe: true,
 });
 const cube = new THREE.Mesh(geometry, material);
+
 scene.add(cube);
 
 const camera = new THREE.PerspectiveCamera(
@@ -25,7 +26,7 @@ const camera = new THREE.PerspectiveCamera(
 	0.1,
 	100
 );
-camera.position.z = 3;
+camera.position.z = 5;
 scene.add(camera);
 
 const controls = new OrbitControls(camera, canvas);
@@ -36,6 +37,25 @@ renderer.setSize(size.width, size.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
 const tick = () => {
+	const distance = camera.position.distanceTo(cube.position);
+
+	const maxDistance = 5; // where jitter is low
+	const minDistance = 1; // where jitter is high
+
+	// Calculate intensity (0 to 1, where 1 is most intense)
+	const intensity = Math.max(
+		0,
+		Math.min(1, (maxDistance - distance) / (maxDistance - minDistance))
+	);
+
+	// jitter amount
+	const jitterAmount = 0.2 * intensity;
+
+	// add the shake
+	cube.rotation.z += (Math.random() - 0.5) * jitterAmount;
+	cube.rotation.x += (Math.random() - 0.5) * jitterAmount;
+	cube.rotation.y += (Math.random() - 0.5) * jitterAmount;
+
 	controls.update();
 	renderer.render(scene, camera);
 
