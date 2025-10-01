@@ -43,3 +43,17 @@ const tick = () => {
 };
 
 tick();
+
+window.addEventListener("resize", () => {
+	// update the size variable
+	size.width = window.innerWidth;
+	size.height = window.innerHeight;
+
+	// update the camera
+	camera.aspect = size.width / size.height;
+	camera.updateProjectionMatrix();
+
+	// update renderer
+	renderer.setSize(size.width, size.height);
+	renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+});
