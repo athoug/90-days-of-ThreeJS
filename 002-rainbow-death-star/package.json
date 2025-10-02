@@ -1,0 +1,22 @@
+{
+	"name": "002-rainbow-death-star",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"dev": "vite",
+		"build": "vite build"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"type": "module",
+	"dependencies": {
+		"three": "^0.180.0"
+	},
+	"devDependencies": {
+		"lil-gui": "^0.20.0",
+		"vite": "^7.1.8",
+		"vite-plugin-restart": "^1.0.0"
+	}
+}
