@@ -18,7 +18,7 @@ const size = {
 const scene = new THREE.Scene();
 scene.background = new THREE.Color("#001");
 
-// 2. object
+// 2.1 object - pizza crust
 const shapeSettings = {
 	length: 12,
 	width: 8,
@@ -43,37 +43,52 @@ const extrudeSettings = {
 };
 
 const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-const material = new THREE.MeshBasicMaterial({
+const crustMaterial = new THREE.MeshBasicMaterial({
 	color: shapeSettings.color,
 	wireframe: false,
 });
-const crust1 = new THREE.Mesh(geometry, material);
+const crust1 = new THREE.Mesh(geometry, crustMaterial);
 scene.add(crust1);
 
-const crust2 = new THREE.Mesh(geometry, material);
+const crust2 = new THREE.Mesh(geometry, crustMaterial);
 crust2.position.x = -13;
 crust2.position.y = -1.25;
 crust2.rotation.z = 0.1;
 scene.add(crust2);
 
-const crust3 = new THREE.Mesh(geometry, material);
+const crust3 = new THREE.Mesh(geometry, crustMaterial);
 crust3.position.x = -25;
 crust3.position.y = -3.7;
 crust3.rotation.z = 0.2;
 scene.add(crust3);
 
 // gui controls
-gui.add(material, "wireframe");
+gui.add(crustMaterial, "wireframe");
 gui.addColor(shapeSettings, "color").onChange(() => {
-	material.color.set(shapeSettings.color);
+	crustMaterial.color.set(shapeSettings.color);
 });
+
+// 2.2 pizza middle
+const vertices = new Float32Array([-20, 1, 0, 0, -50, 0, 20, 1, 0]);
+const sliceGeometry = new THREE.BufferGeometry();
+sliceGeometry.setAttribute("position", new THREE.BufferAttribute(vertices, 3));
+const sliceMaterial = new THREE.MeshBasicMaterial({
+	color: shapeSettings.color,
+	side: THREE.DoubleSide,
+});
+const mesh = new THREE.Mesh(sliceGeometry, sliceMaterial);
+
+mesh.position.y = -2;
+mesh.position.x = -7;
+mesh.rotation.z = 0.1;
+scene.add(mesh);
 
 // 3. camera
 const camera = new THREE.PerspectiveCamera(
 	75,
 	size.with / size.height,
 	0.1,
-	100
+	1000
 );
 camera.position.z = 60;
 scene.add(camera);
