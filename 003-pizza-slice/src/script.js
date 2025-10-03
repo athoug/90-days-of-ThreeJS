@@ -19,13 +19,54 @@ const scene = new THREE.Scene();
 scene.background = new THREE.Color("#001");
 
 // 2. object
-const geometry = new THREE.BoxGeometry(1, 1, 1);
+const shapeSettings = {
+	length: 12,
+	width: 8,
+	color: "#eab162",
+};
+
+const shape = new THREE.Shape();
+shape.moveTo(0, 0);
+shape.lineTo(0, shapeSettings.width);
+shape.lineTo(shapeSettings.length, shapeSettings.width);
+shape.lineTo(shapeSettings.length, 0);
+shape.lineTo(0, 0);
+
+const extrudeSettings = {
+	steps: 2,
+	depth: 10,
+	bevelEnabled: true,
+	bevelThickness: 1,
+	bevelSize: 1,
+	bevelOffset: 0,
+	bevelSegments: 1,
+};
+
+const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
 const material = new THREE.MeshBasicMaterial({
-	color: 0x47ff23,
-	wireframe: true,
+	color: shapeSettings.color,
+	wireframe: false,
 });
-const mesh = new THREE.Mesh(geometry, material);
-scene.add(mesh);
+const crust1 = new THREE.Mesh(geometry, material);
+scene.add(crust1);
+
+const crust2 = new THREE.Mesh(geometry, material);
+crust2.position.x = -13;
+crust2.position.y = -1.25;
+crust2.rotation.z = 0.1;
+scene.add(crust2);
+
+const crust3 = new THREE.Mesh(geometry, material);
+crust3.position.x = -25;
+crust3.position.y = -3.7;
+crust3.rotation.z = 0.2;
+scene.add(crust3);
+
+// gui controls
+gui.add(material, "wireframe");
+gui.addColor(shapeSettings, "color").onChange(() => {
+	material.color.set(shapeSettings.color);
+});
 
 // 3. camera
 const camera = new THREE.PerspectiveCamera(
@@ -34,7 +75,7 @@ const camera = new THREE.PerspectiveCamera(
 	0.1,
 	100
 );
-camera.position.z = 3;
+camera.position.z = 60;
 scene.add(camera);
 
 // 4. controls
