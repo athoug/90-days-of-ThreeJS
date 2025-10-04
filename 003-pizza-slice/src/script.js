@@ -42,21 +42,21 @@ const extrudeSettings = {
 	bevelSegments: 1,
 };
 
-const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+const crustGeometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
 const crustMaterial = new THREE.MeshBasicMaterial({
 	color: shapeSettings.color,
 	wireframe: false,
 });
-const crust1 = new THREE.Mesh(geometry, crustMaterial);
+const crust1 = new THREE.Mesh(crustGeometry, crustMaterial);
 scene.add(crust1);
 
-const crust2 = new THREE.Mesh(geometry, crustMaterial);
+const crust2 = new THREE.Mesh(crustGeometry, crustMaterial);
 crust2.position.x = -13;
 crust2.position.y = -1.25;
 crust2.rotation.z = 0.1;
 scene.add(crust2);
 
-const crust3 = new THREE.Mesh(geometry, crustMaterial);
+const crust3 = new THREE.Mesh(crustGeometry, crustMaterial);
 crust3.position.x = -25;
 crust3.position.y = -3.7;
 crust3.rotation.z = 0.2;
@@ -69,19 +69,53 @@ gui.addColor(shapeSettings, "color").onChange(() => {
 });
 
 // 2.2 pizza middle
-const vertices = new Float32Array([-20, 1, 0, 0, -50, 0, 20, 1, 0]);
-const sliceGeometry = new THREE.BufferGeometry();
-sliceGeometry.setAttribute("position", new THREE.BufferAttribute(vertices, 3));
-const sliceMaterial = new THREE.MeshBasicMaterial({
-	color: shapeSettings.color,
-	side: THREE.DoubleSide,
-});
-const mesh = new THREE.Mesh(sliceGeometry, sliceMaterial);
+const triangleSettings = {
+	length: 0,
+	width: 18,
+	color: "#eab162",
+};
+let triangle = new THREE.Shape();
+triangle.moveTo(0, -50);
+triangle.lineTo(triangleSettings.width, 0);
+triangle.lineTo(-triangleSettings.width, triangleSettings.length);
+triangle.lineTo(triangleSettings.length, -50);
+triangle.lineTo(0, -50);
 
-mesh.position.y = -2;
-mesh.position.x = -7;
-mesh.rotation.z = 0.1;
-scene.add(mesh);
+console.log(triangle.getPoints());
+
+const triangleExtrudeSettings = {
+	depth: 5,
+	bevelEnabled: false,
+};
+
+const triangleGeometry = new THREE.ExtrudeGeometry(
+	triangle,
+	triangleExtrudeSettings
+);
+const triangleMaterial = new THREE.MeshBasicMaterial({
+	color: triangleSettings.color,
+	wireframe: false,
+});
+const triShape = new THREE.Mesh(triangleGeometry, triangleMaterial);
+triShape.position.x = -6;
+triShape.position.y = -1;
+triShape.rotation.z = 0.1;
+
+scene.add(triShape);
+
+// const vertices = new Float32Array([-20, 1, 0, 0, -50, 0, 20, 1, 0]);
+// const sliceGeometry = new THREE.BufferGeometry();
+// sliceGeometry.setAttribute("position", new THREE.BufferAttribute(vertices, 3));
+// const sliceMaterial = new THREE.MeshBasicMaterial({
+// 	color: shapeSettings.color,
+// 	side: THREE.DoubleSide,
+// });
+// const mesh = new THREE.Mesh(sliceGeometry, sliceMaterial);
+
+// mesh.position.y = -2;
+// mesh.position.x = -7;
+// mesh.rotation.z = 0.1;
+// scene.add(mesh);
 
 // 3. camera
 const camera = new THREE.PerspectiveCamera(
@@ -90,7 +124,8 @@ const camera = new THREE.PerspectiveCamera(
 	0.1,
 	1000
 );
-camera.position.z = 60;
+camera.position.z = 80;
+camera.position.y = -50;
 scene.add(camera);
 
 // 4. controls
