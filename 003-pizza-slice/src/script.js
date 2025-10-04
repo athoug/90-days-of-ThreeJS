@@ -66,6 +66,7 @@ scene.add(crust3);
 gui.add(crustMaterial, "wireframe");
 gui.addColor(shapeSettings, "color").onChange(() => {
 	crustMaterial.color.set(shapeSettings.color);
+	triangleMaterial.color.set(shapeSettings.color);
 });
 
 // 2.2 pizza middle
@@ -73,6 +74,7 @@ const triangleSettings = {
 	length: 0,
 	width: 18,
 	color: "#eab162",
+	cheeseColor: "#f5e5ad",
 };
 let triangle = new THREE.Shape();
 triangle.moveTo(0, -50);
@@ -96,12 +98,40 @@ const triangleMaterial = new THREE.MeshBasicMaterial({
 	color: triangleSettings.color,
 	wireframe: false,
 });
+
 const triShape = new THREE.Mesh(triangleGeometry, triangleMaterial);
 triShape.position.x = -6;
 triShape.position.y = -1;
 triShape.rotation.z = 0.1;
 
 scene.add(triShape);
+
+const cheeseExtrudeSettings = {
+	depth: 2,
+	bevelEnabled: false,
+};
+
+const cheeseGeometry = new THREE.ExtrudeGeometry(
+	triangle,
+	cheeseExtrudeSettings
+);
+
+const cheeseMaterial = new THREE.MeshBasicMaterial({
+	color: triangleSettings.cheeseColor,
+	wireframe: false,
+});
+
+const cheeseShape = new THREE.Mesh(cheeseGeometry, cheeseMaterial);
+cheeseShape.position.z = 5;
+cheeseShape.position.x = -6;
+cheeseShape.position.y = -1;
+cheeseShape.rotation.z = 0.1;
+
+scene.add(cheeseShape);
+
+gui.addColor(triangleSettings, "cheeseColor").onChange(() => {
+	cheeseMaterial.color.set(triangleSettings.cheeseColor);
+});
 
 // const vertices = new Float32Array([-20, 1, 0, 0, -50, 0, 20, 1, 0]);
 // const sliceGeometry = new THREE.BufferGeometry();
