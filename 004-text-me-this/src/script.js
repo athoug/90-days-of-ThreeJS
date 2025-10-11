@@ -115,6 +115,10 @@ const clock = new THREE.Clock();
 const tick = () => {
 	const time = clock.getElapsedTime();
 
+	// camera.position.z = time * 2;
+	camera.position.x = Math.sin(time) * Math.PI * 2;
+	camera.position.y = Math.cos(time) * Math.PI * 2;
+
 	controls.update();
 	renderer.render(scene, camera);
 
