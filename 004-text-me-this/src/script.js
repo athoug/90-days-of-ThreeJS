@@ -19,15 +19,21 @@ const size = {
 	width: window.innerWidth,
 	height: window.innerHeight,
 };
+let mouseX = 0,
+	mouseY = 0;
+const ease = 0.035;
+const target = new THREE.Vector3(-60, 0, 0);
 
 const textureLoader = new THREE.TextureLoader();
 
 const sceneControls = gui.addFolder("scene controls");
 const scene = new THREE.Scene();
-scene.background = new THREE.Color("#002");
-// scene.background = textureLoader.load("/env/1.png");
+scene.background = new THREE.Color("#040611");
 
 sceneControls.addColor(scene, "background");
+
+// idle “breathing” on a group (attach your meshes to this)
+const group = new THREE.Group();
 
 const textData = {
 	text: words[Math.floor(Math.random() * words.length)],
@@ -96,8 +102,9 @@ fontLoader.load("/fonts/helvetiker_regular.typeface.json", (font) => {
 		const scale = Math.random();
 		donut.scale.set(scale, scale, scale);
 
-		scene.add(donut);
+		group.add(donut);
 	}
+	scene.add(group);
 });
 
 const camera = new THREE.PerspectiveCamera(75, size.width / size.height);
@@ -113,11 +120,20 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
 const clock = new THREE.Clock();
 const tick = () => {
-	const time = clock.getElapsedTime();
+	const t = clock.getElapsedTime();
 
-	// camera.position.z = time * 2;
-	camera.position.x = Math.sin(time) * Math.PI * 2;
-	camera.position.y = Math.cos(time) * Math.PI * 2;
+	// idle object motion (tiny!)
+	const rx = 0.3 * Math.sin(0.7 * t);
+	const ry = 0.3 * Math.sin(0.3 * t);
+	const rz = 0.3 * Math.sin(0.2 * t);
+	group.rotation.set(rx, ry, rz);
+
+	// camera parallax with easing toward mouse target
+	camera.position.x += ease * (mouseX - camera.position.x);
+	camera.position.y += ease * (mouseY - camera.position.y);
+
+	// keep camera pointed at a fixed anchor
+	camera.lookAt(target);
 
 	controls.update();
 	renderer.render(scene, camera);
@@ -154,6 +170,15 @@ function computePositions(positionAxis = "x") {
 
 	return randomPosition;
 }
+
+window.addEventListener("pointermove", (e) => {
+	const nx = (e.clientX / window.innerWidth) * 2 - 1;
+	const ny = (e.clientY / window.innerHeight) * 2 - 1;
+
+	// scale to gentle offset
+	mouseX = -nx * 10;
+	mouseY = ny * 10;
+});
 
 window.addEventListener("resize", () => {
 	size.width = window.innerWidth;
