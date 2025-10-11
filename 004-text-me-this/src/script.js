@@ -20,9 +20,12 @@ const size = {
 	height: window.innerHeight,
 };
 
+const textureLoader = new THREE.TextureLoader();
+
 const sceneControls = gui.addFolder("scene controls");
 const scene = new THREE.Scene();
 scene.background = new THREE.Color("#002");
+// scene.background = textureLoader.load("/env/1.png");
 
 sceneControls.addColor(scene, "background");
 
@@ -39,8 +42,11 @@ const textData = {
 };
 
 let text;
+const texture = textureLoader.load("textures/12.png");
+texture.colorSpace = THREE.SRGBColorSpace;
 // font magic happens here
 const fontLoader = new FontLoader();
+// === font stuff ===
 fontLoader.load("/fonts/helvetiker_regular.typeface.json", (font) => {
 	const textControls = gui.addFolder("text controls");
 	const textGeometry = new TextGeometry(textData.text, {
@@ -58,10 +64,35 @@ fontLoader.load("/fonts/helvetiker_regular.typeface.json", (font) => {
 			...textData,
 		}).center();
 	});
-	const material = new THREE.MeshNormalMaterial();
+	const material = new THREE.MeshMatcapMaterial({
+		matcap: texture,
+	});
 	text = new THREE.Mesh(textGeometry, material);
 
 	scene.add(text);
+
+	// === objects stuff ===
+	const ring = new THREE.TorusGeometry(0.3, 0.2, 20, 45);
+	const box = new THREE.BoxGeometry(1, 1, 1);
+	for (let i = 0; i < 100; i++) {
+		const object = Math.random() < 0.5 ? box : ring;
+		const donut = new THREE.Mesh(object, material);
+
+		// add randomness in the position
+		donut.position.x = (Math.random() - 0.5) * 20;
+		donut.position.y = (Math.random() - 0.5) * 20;
+		donut.position.z = (Math.random() - 0.5) * 20;
+
+		// let's change the rotation
+		donut.rotation.x = Math.random() * Math.PI;
+		donut.rotation.y = Math.random() * Math.PI;
+
+		// add randomness to the size
+		const scale = Math.random() * 1.5;
+		donut.scale.set(scale, scale, scale);
+
+		scene.add(donut);
+	}
 });
 
 const camera = new THREE.PerspectiveCamera(75, size.width / size.height);
@@ -78,11 +109,6 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 const clock = new THREE.Clock();
 const tick = () => {
 	const time = clock.getElapsedTime();
-
-	if (text?.rotation) {
-		text.rotation.x = time * 0.1;
-		text.rotation.z = time * 0.1;
-	}
 
 	controls.update();
 	renderer.render(scene, camera);
