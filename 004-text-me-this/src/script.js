@@ -42,6 +42,7 @@ const textData = {
 };
 
 let text;
+let textPosition;
 const texture = textureLoader.load("textures/12.png");
 texture.colorSpace = THREE.SRGBColorSpace;
 // font magic happens here
@@ -55,11 +56,14 @@ fontLoader.load("/fonts/helvetiker_regular.typeface.json", (font) => {
 	});
 
 	textGeometry.center();
+	textGeometry.computeBoundingBox();
+	textPosition = textGeometry.boundingBox;
+	console.log(textGeometry.boundingBox);
 
-	textControls.add(textData, "text").onChange((v) => {
+	textControls.add(textData, "text").onChange((textValue) => {
 		text.geometry.dispose();
 
-		text.geometry = new TextGeometry(v, {
+		text.geometry = new TextGeometry(textValue, {
 			font,
 			...textData,
 		}).center();
@@ -72,6 +76,7 @@ fontLoader.load("/fonts/helvetiker_regular.typeface.json", (font) => {
 	scene.add(text);
 
 	// === objects stuff ===
+
 	const ring = new THREE.TorusGeometry(0.3, 0.2, 20, 45);
 	const box = new THREE.BoxGeometry(1, 1, 1);
 	for (let i = 0; i < 100; i++) {
@@ -79,16 +84,16 @@ fontLoader.load("/fonts/helvetiker_regular.typeface.json", (font) => {
 		const donut = new THREE.Mesh(object, material);
 
 		// add randomness in the position
-		donut.position.x = (Math.random() - 0.5) * 20;
-		donut.position.y = (Math.random() - 0.5) * 20;
-		donut.position.z = (Math.random() - 0.5) * 20;
+		donut.position.x = computePositions("x");
+		donut.position.y = computePositions("y");
+		donut.position.z = computePositions("z");
 
 		// let's change the rotation
 		donut.rotation.x = Math.random() * Math.PI;
 		donut.rotation.y = Math.random() * Math.PI;
 
 		// add randomness to the size
-		const scale = Math.random() * 1.5;
+		const scale = Math.random();
 		donut.scale.set(scale, scale, scale);
 
 		scene.add(donut);
@@ -116,6 +121,35 @@ const tick = () => {
 	window.requestAnimationFrame(tick);
 };
 tick();
+
+function computePositions(positionAxis = "x") {
+	const location = {
+		x: [textPosition?.min.x, textPosition?.max.x],
+		y: [textPosition?.min.y, textPosition?.max.y],
+		z: [textPosition?.min.z, textPosition?.max.z],
+	};
+
+	let randomPosition;
+	let count = 0;
+	let maxAttempts = 100;
+
+	do {
+		randomPosition = (Math.random() - 0.5) * 20;
+		count += 1;
+
+		if (count > maxAttempts) {
+			console.warn("Max attempts reached, using fallback position");
+			// Fallback: place it far from the text
+			randomPosition = location[positionAxis][1] + 2;
+			break;
+		}
+	} while (
+		randomPosition > location[positionAxis][0] &&
+		randomPosition < location[positionAxis][1]
+	);
+
+	return randomPosition;
+}
 
 window.addEventListener("resize", () => {
 	size.width = window.innerWidth;
