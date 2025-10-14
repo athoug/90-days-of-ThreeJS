@@ -15,16 +15,57 @@ const gui = new GUI({
 });
 
 const scene = new THREE.Scene();
-scene.background = new THREE.Color("#002");
+// scene.background = new THREE.Color("#002");
+
+// ambient light
+const ambientLight = new THREE.AmbientLight(0xffffff, 1);
+scene.add(ambientLight);
+
+gui.addColor(ambientLight, "color");
+gui.add(ambientLight, "intensity").min(0).max(3).step(0.001);
+
+// directional light
+const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+directionalLight.castShadow = true;
+scene.add(directionalLight);
+
+const cameraHelperDirectional = new THREE.CameraHelper(
+	directionalLight.shadow.camera
+);
+scene.add(cameraHelperDirectional);
 
 const geometry = new THREE.TorusGeometry(1, 0.3, 32, 64);
-const material = new THREE.MeshBasicMaterial();
-material.wireframe = true;
+const material = new THREE.MeshStandardMaterial();
+material.wireframe = false;
+
 const ring = new THREE.Mesh(geometry, material);
-scene.add(ring);
+ring.material.roughness = 0.1;
+ring.material.metalness = 0;
+ring.castShadow = true;
+
+ring.position.y = 1;
+
+gui.add(ring.material, "roughness").min(0).max(100).step(0.001);
+gui.add(ring.material, "metalness").min(0).max(1).step(0.001);
+
+const plane = new THREE.Mesh(
+	new THREE.PlaneGeometry(6, 6),
+	new THREE.MeshStandardMaterial({
+		// side: THREE.DoubleSide,
+	})
+);
+
+plane.receiveShadow = true;
+
+plane.rotation.x = -Math.PI * 0.5;
+plane.position.y = -1;
+
+scene.add(ring, plane);
 
 const camera = new THREE.PerspectiveCamera(75, size.width / size.height);
-camera.position.z = 4;
+camera.position.z = 6;
+camera.position.y = 2;
+camera.position.x = 2;
 scene.add(camera);
 
 const controls = new OrbitControls(camera, canvas);
@@ -33,6 +74,7 @@ controls.enableDamping = true;
 const renderer = new THREE.WebGLRenderer({ canvas });
 renderer.setSize(size.width, size.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.shadowMap.enabled = true;
 
 renderer.render(scene, camera);
 
