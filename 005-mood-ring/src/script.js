@@ -27,12 +27,27 @@ gui.add(ambientLight, "intensity").min(0).max(3).step(0.001);
 // directional light
 const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
 directionalLight.castShadow = true;
+directionalLight.position.y = 4;
+
+directionalLight.shadow.mapSize.width = 1024;
+directionalLight.shadow.mapSize.height = 1024;
+
+directionalLight.shadow.camera.top = 3.5;
+directionalLight.shadow.camera.right = 3.5;
+directionalLight.shadow.camera.bottom = -3.5;
+directionalLight.shadow.camera.left = -3.5;
+
+directionalLight.shadow.camera.near = 1;
+directionalLight.shadow.camera.far = 6;
+
+console.log(directionalLight.shadow.camera);
+
 scene.add(directionalLight);
 
 const cameraHelperDirectional = new THREE.CameraHelper(
 	directionalLight.shadow.camera
 );
-scene.add(cameraHelperDirectional);
+// scene.add(cameraHelperDirectional);
 
 const geometry = new THREE.TorusGeometry(1, 0.3, 32, 64);
 const material = new THREE.MeshStandardMaterial();
