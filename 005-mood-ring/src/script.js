@@ -54,18 +54,24 @@ const cameraHelperDirectional = new THREE.CameraHelper(
 );
 // scene.add(cameraHelperDirectional);
 
-const geometryRing = new THREE.TorusGeometry(1.05, 0.2, 34, 64);
-const geometryInner = new THREE.TorusGeometry(1.1, 0.25, 6, 52);
-const geometryOuter = new THREE.TorusGeometry(1.15, 0.1, 34, 64);
+const geometryRing = new THREE.TorusGeometry(1.15, 0.2, 20, 64);
+const geometryInner = new THREE.TorusGeometry(1.11, 0.21, 6, 64);
+const geometryOuter = new THREE.TorusGeometry(1.15, 0.1, 6, 64);
+
 const materialRing = new THREE.MeshStandardMaterial({ color: "red" });
 const materialOuter = new THREE.MeshStandardMaterial();
 materialRing.wireframe = false;
 
+// === ring making ===
+const ringGroup = new THREE.Group();
+ringGroup.castShadow = true;
+
 const outerRing1 = new THREE.Mesh(geometryOuter, materialOuter);
 outerRing1.position.y = 1;
-outerRing1.position.z = -0.3;
+outerRing1.position.z = -0.2;
 outerRing1.material.roughness = 0.1;
 outerRing1.material.metalness = 0;
+outerRing1.castShadow = true;
 
 const ring = new THREE.Mesh(geometryRing, materialRing);
 // ring.material.roughness = 0.1;
@@ -76,15 +82,16 @@ ring.position.y = 1;
 
 const insideRing = new THREE.Mesh(geometryInner, materialOuter);
 insideRing.position.y = 1;
-insideRing.scale.set(0.9, 0.9, 0.9);
+// insideRing.scale.set(0.9, 0.9, 0.9);
 insideRing.material.roughness = 0.1;
 insideRing.material.metalness = 0;
 
 const outerRing2 = new THREE.Mesh(geometryOuter, materialOuter);
 outerRing2.position.y = 1;
-outerRing2.position.z = 0.3;
+outerRing2.position.z = 0.2;
 outerRing2.material.roughness = 0.1;
 outerRing2.material.metalness = 0;
+outerRing2.castShadow = true;
 
 const plane = new THREE.Mesh(
 	new THREE.PlaneGeometry(6, 6),
@@ -98,7 +105,9 @@ plane.receiveShadow = true;
 plane.rotation.x = -Math.PI * 0.5;
 plane.position.y = -1;
 
-scene.add(outerRing1, ring, insideRing, outerRing2, plane);
+ringGroup.add(outerRing1, ring, insideRing, outerRing2);
+
+scene.add(ringGroup, plane);
 
 const camera = new THREE.PerspectiveCamera(75, size.width / size.height);
 camera.position.z = 6;
@@ -120,9 +129,9 @@ const clock = new THREE.Clock();
 const tick = () => {
 	const timePassed = clock.getElapsedTime();
 
-	// ring.rotation.x = timePassed * 0.1;
-	// ring.rotation.y = timePassed * 0.15;
-	// ring.rotation.z = timePassed * 0.25;
+	// ringGroup.rotation.x = timePassed;
+	// ringGroup.rotation.y = timePassed * 0.15;
+	// ringGroup.rotation.z = timePassed * 0.25;
 
 	controls.update();
 	renderer.render(scene, camera);
