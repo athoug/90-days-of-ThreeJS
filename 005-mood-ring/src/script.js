@@ -1,8 +1,11 @@
 import * as THREE from "three";
 import GUI from "lil-gui";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { ringTextures } from "./texture";
 
 const canvas = document.querySelector("canvas.webgl");
+
+console.log(ringTextures);
 
 const size = {
 	width: window.innerWidth,
@@ -58,7 +61,9 @@ const geometryRing = new THREE.TorusGeometry(1.15, 0.2, 20, 64);
 const geometryInner = new THREE.TorusGeometry(1.11, 0.21, 6, 64);
 const geometryOuter = new THREE.TorusGeometry(1.15, 0.1, 6, 64);
 
-const materialRing = new THREE.MeshStandardMaterial({ color: "red" });
+const materialRing = new THREE.MeshMatcapMaterial({
+	matcap: ringTextures.gray,
+});
 const materialOuter = new THREE.MeshStandardMaterial();
 materialRing.wireframe = false;
 
@@ -96,6 +101,7 @@ outerRing2.castShadow = true;
 const plane = new THREE.Mesh(
 	new THREE.PlaneGeometry(6, 6),
 	new THREE.MeshStandardMaterial({
+		color: "#001",
 		// side: THREE.DoubleSide,
 	})
 );
@@ -106,6 +112,7 @@ plane.rotation.x = -Math.PI * 0.5;
 plane.position.y = -1;
 
 ringGroup.add(outerRing1, ring, insideRing, outerRing2);
+ringGroup.rotation.x = Math.PI * 0.25;
 
 scene.add(ringGroup, plane);
 
