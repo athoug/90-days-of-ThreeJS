@@ -15,3 +15,9 @@ canvas.webgl {
 	left: 0;
 	outline: none;
 }
+
+.form-contaier {
+	position: absolute;
+	z-index: 1;
+	color: aliceblue;
+}

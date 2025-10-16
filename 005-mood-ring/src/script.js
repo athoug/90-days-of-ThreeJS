@@ -4,8 +4,7 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { ringTextures } from "./texture";
 
 const canvas = document.querySelector("canvas.webgl");
-
-console.log(ringTextures);
+const colorSelector = document.querySelector("select#color-selector");
 
 const size = {
 	width: window.innerWidth,
@@ -62,7 +61,7 @@ const geometryInner = new THREE.TorusGeometry(1.11, 0.21, 6, 64);
 const geometryOuter = new THREE.TorusGeometry(1.15, 0.1, 6, 64);
 
 const materialRing = new THREE.MeshMatcapMaterial({
-	matcap: ringTextures.gray,
+	matcap: ringTextures[colorSelector.value],
 });
 const materialOuter = new THREE.MeshStandardMaterial();
 materialRing.wireframe = false;
@@ -156,4 +155,11 @@ window.addEventListener("resize", () => {
 
 	renderer.setSize(size.width, size.height);
 	renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+});
+
+colorSelector.addEventListener("change", (e) => {
+	console.log(e.target.value);
+	if (ringTextures[e.target.value]) {
+		ring.material.matcap = ringTextures[e.target.value];
+	}
 });
