@@ -1,6 +1,14 @@
 import * as THREE from "three";
+import { log } from "three/tsl";
 
+const btnSelected = document.querySelector(".btn-select");
+const listContainer = document.querySelector("#list-container");
+
+console.log(btnSelected);
+
+// loading textures and creating the list container at once
 const textureList = {
+	rainbow: "/textures/rainbow.png",
 	black: "/textures/black.png",
 	gray: "/textures/gray.png",
 	gray2: "/textures/gray-2.png",
@@ -26,8 +34,35 @@ const textureLoader = new THREE.TextureLoader();
 
 export const ringTextures = {};
 for (const key in textureList) {
+	// load textures
 	ringTextures[key] = textureLoader.load(textureList[key]);
 	ringTextures[key].colorSpace = THREE.SRGBColorSpace;
+
+	// add select component elements
+	/*
+		this is the structure 
+		<li class="select-items">
+			<img class="select-img" src="./textures/pink.png" />
+			<span class="color-name">pink</span>
+		</li>
+	*/
+	// 1- create the list item
+	const li = document.createElement("li");
+	li.setAttribute("class", "select-items");
+
+	// 2- create an image
+	const img = document.createElement("img");
+	img.setAttribute("class", "select-img");
+	img.setAttribute("src", textureList[key]);
+	li.appendChild(img);
+
+	// 3- create span
+	const span = document.createElement("span");
+	span.setAttribute("class", "color-name");
+	span.innerText = key;
+	li.appendChild(span);
+
+	listContainer.appendChild(li);
 }
 
 export const feelings = {
@@ -65,3 +100,14 @@ export const feelings = {
 	orange2:
 		"then you might be feeling a bit <span class='feeling'>nervous</span>, <span class='feeling'>stressed</span> or <span class='feeling'>challenged</span>",
 };
+
+listContainer.addEventListener("click", (e) => {
+	const currentElement = e.target.closest("li").querySelector(".color-name");
+
+	if (currentElement.innerText) {
+		// console.log(currentElement.innerText);
+		const selected = currentElement.innerText;
+		btnSelected.setAttribute("value", selected);
+		btnSelected.innerHTML = currentElement;
+	}
+});

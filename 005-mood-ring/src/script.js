@@ -1,11 +1,13 @@
 import * as THREE from "three";
 import GUI from "lil-gui";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { ringTextures, feelings } from "./texture";
+import { ringTextures, feelings } from "./components-builder";
 
 const canvas = document.querySelector("canvas.webgl");
-const colorSelector = document.querySelector("select#color-selector");
+const btnSelected = document.querySelector(".btn-select");
 const feelingsDescription = document.querySelector(".description");
+
+const defaultColor = btnSelected.getAttribute("value");
 
 const size = {
 	width: window.innerWidth,
@@ -48,7 +50,7 @@ directionalLight.shadow.camera.left = -3.5;
 directionalLight.shadow.camera.near = 1;
 directionalLight.shadow.camera.far = 6;
 
-console.log(directionalLight.shadow.camera);
+// console.log(directionalLight.shadow.camera);
 
 scene.add(directionalLight);
 
@@ -62,7 +64,7 @@ const geometryInner = new THREE.TorusGeometry(1.11, 0.21, 6, 64);
 const geometryOuter = new THREE.TorusGeometry(1.15, 0.1, 6, 64);
 
 const materialRing = new THREE.MeshMatcapMaterial({
-	matcap: ringTextures[colorSelector.value],
+	matcap: ringTextures[defaultColor],
 });
 const materialOuter = new THREE.MeshStandardMaterial();
 materialRing.wireframe = false;
@@ -159,12 +161,12 @@ window.addEventListener("resize", () => {
 	renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 });
 
-colorSelector.addEventListener("change", (e) => {
+// create a mutation observer
+
+btnSelected.addEventListener("change", (e) => {
 	console.log(e.target.value);
 	if (ringTextures[e.target.value]) {
 		ring.material.matcap = ringTextures[e.target.value];
 		feelingsDescription.innerHTML = feelings[e.target.value];
 	}
 });
-
-console.log(ringGroup);
