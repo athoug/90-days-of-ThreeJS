@@ -5,6 +5,7 @@ import { ringTextures, feelings } from "./components-builder";
 
 const canvas = document.querySelector("canvas.webgl");
 const btnSelected = document.querySelector(".btn-select");
+const listContainer = document.querySelector("#list-container");
 const feelingsDescription = document.querySelector(".description");
 
 const defaultColor = btnSelected.getAttribute("value");
@@ -198,10 +199,7 @@ const config = {
 
 mutationObserver.observe(btnSelected, config);
 
-btnSelected.addEventListener("change", (e) => {
-	console.log(e.target.value);
-	if (ringTextures[e.target.value]) {
-		ring.material.matcap = ringTextures[e.target.value];
-		feelingsDescription.innerHTML = feelings[e.target.value];
-	}
+btnSelected.addEventListener("click", (e) => {
+	console.log("click");
+	listContainer.classList.toggle("hide");
 });

@@ -23,9 +23,30 @@ canvas.webgl {
 }
 
 /* select styles */
-#list-container {
+.btn-select {
 	width: 250px;
+	background-color: #0d0d13;
 }
+.default-value {
+	display: block;
+	padding: 0.71em 1.5em;
+}
+
+.color-list-div {
+	width: 250px;
+	height: 300px;
+	overflow-y: scroll;
+	box-shadow: 0 0 5px #191924;
+}
+
+#list-container {
+	transition: all 0.2s;
+}
+
+.hide {
+	display: none;
+}
+
 .select-items {
 	display: flex;
 	background-color: #0d0d13;

@@ -4,8 +4,6 @@ import { log } from "three/tsl";
 const btnSelected = document.querySelector(".btn-select");
 const listContainer = document.querySelector("#list-container");
 
-console.log(btnSelected);
-
 // loading textures and creating the list container at once
 const textureList = {
 	rainbow: "/textures/rainbow.png",
@@ -46,23 +44,25 @@ for (const key in textureList) {
 			<span class="color-name">pink</span>
 		</li>
 	*/
-	// 1- create the list item
-	const li = document.createElement("li");
-	li.setAttribute("class", "select-items");
+	if (key !== "rainbow") {
+		// 1- create the list item
+		const li = document.createElement("li");
+		li.setAttribute("class", "select-items");
 
-	// 2- create an image
-	const img = document.createElement("img");
-	img.setAttribute("class", "select-img");
-	img.setAttribute("src", textureList[key]);
-	li.appendChild(img);
+		// 2- create an image
+		const img = document.createElement("img");
+		img.setAttribute("class", "select-img");
+		img.setAttribute("src", textureList[key]);
+		li.appendChild(img);
 
-	// 3- create span
-	const span = document.createElement("span");
-	span.setAttribute("class", "color-name");
-	span.innerText = key;
-	li.appendChild(span);
+		// 3- create span
+		const span = document.createElement("span");
+		span.setAttribute("class", "color-name");
+		span.innerText = key;
+		li.appendChild(span);
 
-	listContainer.appendChild(li);
+		listContainer.appendChild(li);
+	}
 }
 
 export const feelings = {
@@ -102,12 +102,18 @@ export const feelings = {
 };
 
 listContainer.addEventListener("click", (e) => {
-	const currentElement = e.target.closest("li").querySelector(".color-name");
+	const currentElement = e.target.closest("li");
+	const clonedElement = currentElement.cloneNode(true);
+	const colorElement = currentElement.querySelector(".color-name");
 
-	if (currentElement.innerText) {
+	if (colorElement.innerText) {
 		// console.log(currentElement.innerText);
-		const selected = currentElement.innerText;
+		const selected = colorElement.innerText;
 		btnSelected.setAttribute("value", selected);
-		btnSelected.innerHTML = currentElement;
+
+		btnSelected.innerHTML = "";
+		btnSelected.appendChild(clonedElement);
+
+		listContainer.classList.toggle("hide");
 	}
 });
