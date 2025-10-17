@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import GUI from "lil-gui";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { ringTextures, feelings } from "./components-builder";
+import { ringTextures, textureList } from "./components-builder";
 
 const canvas = document.querySelector("canvas.webgl");
 const btnSelected = document.querySelector(".btn-select");
@@ -180,7 +180,8 @@ const mutationObserver = new MutationObserver((mutations) => {
 			const value = btnSelected.getAttribute(mutation.attributeName);
 			if (ringTextures[value]) {
 				ring.material.matcap = ringTextures[value];
-				feelingsDescription.innerHTML = feelings[value];
+				feelingsDescription.innerHTML = textureList[value].emotion;
+				feelingsDescription.classList.remove("hide");
 			}
 		} else if (mutation.type === "characterData") {
 			console.log("Text content changed.");
@@ -191,15 +192,15 @@ const mutationObserver = new MutationObserver((mutations) => {
 
 const config = {
 	attributes: true, // Observe attribute changes
-	childList: true, // Observe direct child additions/removals
-	characterData: true, // Observe changes to text content of the target
-	subtree: true, // Observe changes in descendants as well
+	childList: false, // Observe direct child additions/removals
+	characterData: false, // Observe changes to text content of the target
+	subtree: false, // Observe changes in descendants as well
 	attributeOldValue: true, // Record the old value of modified attributes
 };
 
 mutationObserver.observe(btnSelected, config);
 
 btnSelected.addEventListener("click", (e) => {
-	console.log("click");
 	listContainer.classList.toggle("hide");
+	feelingsDescription.classList.add("hide");
 });

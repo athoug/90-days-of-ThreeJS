@@ -7,6 +7,7 @@
 html,
 body {
 	overflow: hidden;
+	font-family: Arial, Helvetica, sans-serif;
 }
 
 canvas.webgl {
@@ -17,15 +18,23 @@ canvas.webgl {
 }
 
 .form-contaier {
+	font-size: 0.75em;
+	width: 300px;
+	max-height: 300px;
+	overflow-y: scroll;
 	position: absolute;
+	right: 15px;
+	top: 78px;
 	z-index: 1;
 	color: aliceblue;
+	border: 2px solid red;
 }
 
 /* select styles */
 .btn-select {
-	width: 250px;
+	/* width: 250px; */
 	background-color: #0d0d13;
+	margin-bottom: 1em;
 }
 .default-value {
 	display: block;
@@ -33,9 +42,7 @@ canvas.webgl {
 }
 
 .color-list-div {
-	width: 250px;
-	height: 300px;
-	overflow-y: scroll;
+	/* width: 250px; */
 	box-shadow: 0 0 5px #191924;
 }
 
