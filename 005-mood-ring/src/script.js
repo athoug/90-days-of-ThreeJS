@@ -1,10 +1,11 @@
 import * as THREE from "three";
 import GUI from "lil-gui";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { ringTextures } from "./texture";
+import { ringTextures, feelings } from "./texture";
 
 const canvas = document.querySelector("canvas.webgl");
 const colorSelector = document.querySelector("select#color-selector");
+const feelingsDescription = document.querySelector(".description");
 
 const size = {
 	width: window.innerWidth,
@@ -23,7 +24,7 @@ const axesHelper = new THREE.AxesHelper();
 scene.add(axesHelper);
 
 // ambient light
-const ambientLight = new THREE.AmbientLight(0xffffff, 1);
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.258);
 scene.add(ambientLight);
 
 gui.addColor(ambientLight, "color");
@@ -71,7 +72,7 @@ const ringGroup = new THREE.Group();
 ringGroup.castShadow = true;
 
 const outerRing1 = new THREE.Mesh(geometryOuter, materialOuter);
-outerRing1.position.y = 1;
+// outerRing1.position.y = 1;
 outerRing1.position.z = -0.2;
 outerRing1.material.roughness = 0.1;
 outerRing1.material.metalness = 0;
@@ -82,16 +83,16 @@ const ring = new THREE.Mesh(geometryRing, materialRing);
 // ring.material.metalness = 0;
 ring.castShadow = true;
 
-ring.position.y = 1;
+// ring.position.y = 1;
 
 const insideRing = new THREE.Mesh(geometryInner, materialOuter);
-insideRing.position.y = 1;
+// insideRing.position.y = 1;
 // insideRing.scale.set(0.9, 0.9, 0.9);
 insideRing.material.roughness = 0.1;
 insideRing.material.metalness = 0;
 
 const outerRing2 = new THREE.Mesh(geometryOuter, materialOuter);
-outerRing2.position.y = 1;
+// outerRing2.position.y = 1;
 outerRing2.position.z = 0.2;
 outerRing2.material.roughness = 0.1;
 outerRing2.material.metalness = 0;
@@ -113,6 +114,7 @@ plane.position.y = -1;
 ringGroup.add(outerRing1, ring, insideRing, outerRing2);
 ringGroup.rotation.x = Math.PI * 0.25;
 
+ringGroup.position.y = 1;
 scene.add(ringGroup, plane);
 
 const camera = new THREE.PerspectiveCamera(75, size.width / size.height);
@@ -136,8 +138,8 @@ const tick = () => {
 	const timePassed = clock.getElapsedTime();
 
 	// ringGroup.rotation.x = timePassed;
-	// ringGroup.rotation.y = timePassed * 0.15;
-	// ringGroup.rotation.z = timePassed * 0.25;
+	ringGroup.rotation.y = timePassed * 0.15;
+	// ringGroup.rotation.z = timePassed;
 
 	controls.update();
 	renderer.render(scene, camera);
@@ -161,5 +163,8 @@ colorSelector.addEventListener("change", (e) => {
 	console.log(e.target.value);
 	if (ringTextures[e.target.value]) {
 		ring.material.matcap = ringTextures[e.target.value];
+		feelingsDescription.innerHTML = feelings[e.target.value];
 	}
 });
+
+console.log(ringGroup);
