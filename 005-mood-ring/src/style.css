@@ -27,7 +27,6 @@ canvas.webgl {
 	top: 78px;
 	z-index: 1;
 	color: aliceblue;
-	border: 2px solid red;
 }
 
 /* select styles */
@@ -71,4 +70,14 @@ canvas.webgl {
 
 .select-items:hover {
 	background-color: #1e1e2c;
+}
+
+.description {
+	line-height: 1.45;
+}
+
+.feeling {
+	background-color: #32324e;
+	padding: 2px 8px;
+	border-radius: 10px;
 }

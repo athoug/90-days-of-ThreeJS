@@ -24,7 +24,7 @@ const scene = new THREE.Scene();
 // scene.background = new THREE.Color("#002");
 
 const axesHelper = new THREE.AxesHelper();
-scene.add(axesHelper);
+// scene.add(axesHelper);
 
 // ambient light
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.258);
