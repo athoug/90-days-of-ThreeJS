@@ -161,7 +161,42 @@ window.addEventListener("resize", () => {
 	renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 });
 
-// create a mutation observer
+// create a mutation observer to see if div element changed
+const mutationObserver = new MutationObserver((mutations) => {
+	mutations.forEach((mutation) => {
+		if (mutation.type === "childList") {
+			console.log(
+				"Child nodes added or removed:",
+				mutation.addedNodes,
+				mutation.removedNodes
+			);
+		} else if (mutation.type === "attributes") {
+			console.log(
+				`Attribute "${mutation.attributeName}" changed from "${
+					mutation.oldValue
+				}" to "${btnSelected.getAttribute(mutation.attributeName)}"`
+			);
+			const value = btnSelected.getAttribute(mutation.attributeName);
+			if (ringTextures[value]) {
+				ring.material.matcap = ringTextures[value];
+				feelingsDescription.innerHTML = feelings[value];
+			}
+		} else if (mutation.type === "characterData") {
+			console.log("Text content changed.");
+		}
+		// Perform actions based on the detected changes
+	});
+});
+
+const config = {
+	attributes: true, // Observe attribute changes
+	childList: true, // Observe direct child additions/removals
+	characterData: true, // Observe changes to text content of the target
+	subtree: true, // Observe changes in descendants as well
+	attributeOldValue: true, // Record the old value of modified attributes
+};
+
+mutationObserver.observe(btnSelected, config);
 
 btnSelected.addEventListener("change", (e) => {
 	console.log(e.target.value);
