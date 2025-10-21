@@ -23,12 +23,25 @@ const plane = new THREE.Mesh(
 );
 plane.rotation.x = Math.PI * 0.5;
 plane.position.y = -1.5;
-scene.add(plane);
+// scene.add(plane);
 
 const cat = new THREE.Group();
 scene.add(cat);
 
-// const
+const head = new THREE.Mesh(
+	new THREE.SphereGeometry(1.5, 64, 64),
+	new THREE.MeshStandardMaterial()
+);
+cat.add(head);
+
+const earGeometry = new THREE.ConeGeometry(0.55, 1, 3);
+const earMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+const earL = new THREE.Mesh(earGeometry, earMaterial);
+earL.position.y = 1.75;
+earL.position.z += 1;
+earL.rotation.y = 0.75;
+earL.rotation.z = 0.05;
+cat.add(earL);
 
 const camera = new THREE.PerspectiveCamera(75, size.width / size.height);
 camera.position.z = 5;
