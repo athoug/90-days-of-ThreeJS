@@ -15,12 +15,29 @@ const gui = new GUI({
 const scene = new THREE.Scene();
 scene.background = new THREE.Color("#001");
 
+const plane = new THREE.Mesh(
+	new THREE.PlaneGeometry(5, 5),
+	new THREE.MeshStandardMaterial({
+		side: THREE.DoubleSide,
+	})
+);
+plane.rotation.x = Math.PI * 0.5;
+plane.position.y = -1.5;
+scene.add(plane);
+
 const cat = new THREE.Group();
 scene.add(cat);
 
+// const
+
 const camera = new THREE.PerspectiveCamera(75, size.width / size.height);
-camera.position.z = 3;
+camera.position.z = 5;
+// camera.position.y = 2;
+// camera.position.x = 1;
 scene.add(camera);
+
+const ambientLight = new THREE.AmbientLight("#fff", 1);
+scene.add(ambientLight);
 
 const controls = new OrbitControls(camera, canvas);
 controls.enableDamping = true;
