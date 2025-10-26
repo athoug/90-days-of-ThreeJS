@@ -1,6 +1,10 @@
 import * as THREE from "three";
 import GUI from "lil-gui";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { Line2 } from "three/addons/lines/Line2.js";
+import { LineMaterial } from "three/addons/lines/LineMaterial.js";
+import { LineGeometry } from "three/addons/lines/LineGeometry.js";
+import { CustomSinCurve, whiskersPoints } from "./helpers";
 
 const canvas = document.querySelector("canvas.webgl");
 
@@ -26,10 +30,10 @@ const measurements = {
 };
 
 const scene = new THREE.Scene();
-scene.background = new THREE.Color("#001");
+scene.background = new THREE.Color("#03031e");
 
 const axisHelper = new THREE.AxesHelper(25);
-scene.add(axisHelper);
+// scene.add(axisHelper);
 
 const plane = new THREE.Mesh(
 	new THREE.PlaneGeometry(5, 5),
@@ -52,20 +56,21 @@ const head = new THREE.Mesh(
 );
 cat.add(head);
 
-catControls
-	.add(measurements, "head")
-	.name("head size")
-	.min(0.1)
-	.max(10)
-	.onChange((v) => {
-		measurements.head = v;
-		console.log(v);
+// catControls
+// 	.add(measurements, "head")
+// 	.name("head size")
+// 	.min(0.1)
+// 	.max(10)
+// 	.onChange((v) => {
+// 		measurements.head = v;
+// 		console.log(v);
 
-		head.geometry.dispose();
+// 		head.geometry.dispose();
 
-		head.geometry = new THREE.SphereGeometry(measurements.head, 64, 32);
-	});
+// 		head.geometry = new THREE.SphereGeometry(measurements.head, 64, 32);
+// 	});
 
+// --- ears ---
 const earGeometry = new THREE.ConeGeometry(
 	measurements.ear.radius,
 	measurements.ear.height,
@@ -91,8 +96,9 @@ earL.rotation.y = 0.930000000000007;
 earL.rotation.z = 0.950000000000003;
 cat.add(earL);
 
+// --- eyes ---
 const eyeGeometry = new THREE.SphereGeometry(measurements.eye, 64, 32);
-const eyeMaterial = new THREE.MeshStandardMaterial({ color: "#001" });
+const eyeMaterial = new THREE.MeshStandardMaterial({ color: "#e0be26" });
 const eyeL = new THREE.Mesh(eyeGeometry, eyeMaterial);
 eyeL.position.x = -2.05;
 eyeL.position.z = 5.57;
@@ -103,9 +109,46 @@ eyeR.position.x = 2.05;
 eyeR.position.z = 5.57;
 cat.add(eyeR);
 
-catControls.add(eyeL.position, "x").min(-10).max(10).step(0.01);
-catControls.add(eyeL.position, "y").min(-10).max(10).step(0.01);
-catControls.add(eyeL.position, "z").min(-10).max(10).step(0.01);
+// --- tail ---
+const path = new CustomSinCurve(5);
+const tailGeometry = new THREE.TubeGeometry(path, 77, 1.26, 10, false);
+const tailMaterial = new THREE.MeshStandardMaterial();
+const tail = new THREE.Mesh(tailGeometry, tailMaterial);
+
+tail.position.y = 6.31;
+tail.position.z = -8.68;
+tail.rotation.x = 4.19;
+tail.rotation.y = -1.8;
+tail.rotation.z = 6.56;
+
+cat.add(tail);
+
+// --- whiskers ---
+const lineMaterial = new LineMaterial({
+	color: "#232323",
+	linewidth: 10,
+	linecap: "round", //ignored by WebGLRenderer
+	linejoin: "round", //ignored by WebGLRenderer
+});
+
+const whiskers = new THREE.Group();
+for (const point in whiskersPoints) {
+	const lineGeometry = new LineGeometry();
+	lineGeometry.setPositions(whiskersPoints[point]);
+	const whisker = new Line2(lineGeometry, lineMaterial);
+
+	whiskers.add(whisker);
+}
+
+cat.add(whiskers);
+
+catControls.add(tail.position, "x").min(-10).max(10).step(0.01);
+catControls.add(tail.position, "y").min(-10).max(10).step(0.01);
+catControls.add(tail.position, "z").min(-10).max(10).step(0.01);
+
+catControls.add(tail.rotation, "x").min(-10).max(10).step(0.01);
+catControls.add(tail.rotation, "y").min(-10).max(10).step(0.01);
+catControls.add(tail.rotation, "z").min(-10).max(10).step(0.01);
 
 const camera = new THREE.PerspectiveCamera(75, size.width / size.height);
 camera.position.z = 25;
@@ -124,9 +167,15 @@ renderer.setSize(size.width, size.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
 const clock = new THREE.Clock();
+let multiplier = -1;
+
 const tick = () => {
 	const t = clock.getElapsedTime();
 
+	if (tail.rotation.y > -1.25 || tail.rotation.y < -1.95) {
+		multiplier *= -1;
+	}
+	tail.rotation.y += 0.5 * 0.01 * multiplier;
 	controls.update();
 	renderer.render(scene, camera);
 
