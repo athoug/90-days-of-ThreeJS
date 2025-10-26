@@ -16,6 +16,7 @@ const gui = new GUI({
 // 1 world unit is cm
 const measurements = {
 	head: 6,
+	eye: 0.5,
 	ear: {
 		radius: 2.35,
 		height: 6,
@@ -90,12 +91,21 @@ earL.rotation.y = 0.930000000000007;
 earL.rotation.z = 0.950000000000003;
 cat.add(earL);
 
-catControls.add(earL.position, "x").min(-10).max(10).step(0.01);
-catControls.add(earL.position, "y").min(-10).max(10).step(0.01);
-catControls.add(earL.position, "z").min(-10).max(10).step(0.01);
-catControls.add(earL.rotation, "x").min(-100).max(100).step(0.01);
-catControls.add(earL.rotation, "y").min(-100).max(100).step(0.01);
-catControls.add(earL.rotation, "z").min(-100).max(100).step(0.01);
+const eyeGeometry = new THREE.SphereGeometry(measurements.eye, 64, 32);
+const eyeMaterial = new THREE.MeshStandardMaterial({ color: "#001" });
+const eyeL = new THREE.Mesh(eyeGeometry, eyeMaterial);
+eyeL.position.x = -2.05;
+eyeL.position.z = 5.57;
+cat.add(eyeL);
+
+const eyeR = new THREE.Mesh(eyeGeometry, eyeMaterial);
+eyeR.position.x = 2.05;
+eyeR.position.z = 5.57;
+cat.add(eyeR);
+
+catControls.add(eyeL.position, "x").min(-10).max(10).step(0.01);
+catControls.add(eyeL.position, "y").min(-10).max(10).step(0.01);
+catControls.add(eyeL.position, "z").min(-10).max(10).step(0.01);
 
 const camera = new THREE.PerspectiveCamera(75, size.width / size.height);
 camera.position.z = 25;
