@@ -1,0 +1,22 @@
+{
+	"name": "007-pacman-ghost",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"dev": "vite",
+		"build": "vite build"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"type": "module",
+	"dependencies": {
+		"lil-gui": "^0.21.0",
+		"three": "^0.180.0"
+	},
+	"devDependencies": {
+		"vite": "^7.1.12",
+		"vite-plugin-restart": "^1.0.0"
+	}
+}
