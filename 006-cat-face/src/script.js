@@ -3,6 +3,7 @@ import GUI from "lil-gui";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
 const canvas = document.querySelector("canvas.webgl");
+
 const size = {
 	width: window.innerWidth,
 	height: window.innerHeight,
@@ -12,8 +13,22 @@ const gui = new GUI({
 	title: "cat control",
 });
 
+// 1 world unit is cm
+const measurements = {
+	head: 6,
+	ear: {
+		radius: 2.35,
+		height: 6,
+		radialSeg: 3,
+		heightSeg: 1,
+	},
+};
+
 const scene = new THREE.Scene();
 scene.background = new THREE.Color("#001");
+
+const axisHelper = new THREE.AxesHelper(25);
+scene.add(axisHelper);
 
 const plane = new THREE.Mesh(
 	new THREE.PlaneGeometry(5, 5),
@@ -28,23 +43,62 @@ plane.position.y = -1.5;
 const cat = new THREE.Group();
 scene.add(cat);
 
+const catControls = gui.addFolder("cat");
+
 const head = new THREE.Mesh(
-	new THREE.SphereGeometry(1.5, 64, 64),
+	new THREE.SphereGeometry(measurements.head, 64, 32),
 	new THREE.MeshStandardMaterial()
 );
 cat.add(head);
 
-const earGeometry = new THREE.ConeGeometry(0.55, 1, 3);
-const earMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+catControls
+	.add(measurements, "head")
+	.name("head size")
+	.min(0.1)
+	.max(10)
+	.onChange((v) => {
+		measurements.head = v;
+		console.log(v);
+
+		head.geometry.dispose();
+
+		head.geometry = new THREE.SphereGeometry(measurements.head, 64, 32);
+	});
+
+const earGeometry = new THREE.ConeGeometry(
+	measurements.ear.radius,
+	measurements.ear.height,
+	measurements.ear.radialSeg,
+	measurements.ear.height
+);
+const earMaterial = new THREE.MeshStandardMaterial();
+const earR = new THREE.Mesh(earGeometry, earMaterial);
+earR.position.x = 3.15;
+earR.position.y = 6.67;
+earR.position.z = 1.64;
+earR.rotation.x = 0.519999999999996;
+earR.rotation.y = 0.930000000000007;
+earR.rotation.z = -0.560000000000002;
+cat.add(earR);
+
 const earL = new THREE.Mesh(earGeometry, earMaterial);
-earL.position.y = 1.75;
-earL.position.z += 1;
-earL.rotation.y = 0.75;
-earL.rotation.z = 0.05;
+earL.position.x = -4.7;
+earL.position.y = 6.67;
+earL.position.z = 1.64;
+earL.rotation.x = -0.519999999999996;
+earL.rotation.y = 0.930000000000007;
+earL.rotation.z = 0.950000000000003;
 cat.add(earL);
 
+catControls.add(earL.position, "x").min(-10).max(10).step(0.01);
+catControls.add(earL.position, "y").min(-10).max(10).step(0.01);
+catControls.add(earL.position, "z").min(-10).max(10).step(0.01);
+catControls.add(earL.rotation, "x").min(-100).max(100).step(0.01);
+catControls.add(earL.rotation, "y").min(-100).max(100).step(0.01);
+catControls.add(earL.rotation, "z").min(-100).max(100).step(0.01);
+
 const camera = new THREE.PerspectiveCamera(75, size.width / size.height);
-camera.position.z = 5;
+camera.position.z = 25;
 // camera.position.y = 2;
 // camera.position.x = 1;
 scene.add(camera);
