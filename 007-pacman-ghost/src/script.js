@@ -22,6 +22,15 @@ const ghostMeasurements = {
 		thetaStart: 0,
 		thetaLength: Math.PI / 2,
 	},
+	leg: {
+		radius: 0.25,
+		widthSegments: 32,
+		heightSegments: 16,
+		phiStart: 0,
+		phiLength: Math.PI * 2,
+		thetaStart: 0,
+		thetaLength: Math.PI / 2,
+	},
 };
 
 const gui = new GUI({
@@ -45,13 +54,44 @@ const domeGeometry = new THREE.SphereGeometry(
 	ghostMeasurements.dome.thetaStart,
 	ghostMeasurements.dome.thetaLength
 );
+
+const legGeometry = new THREE.SphereGeometry(
+	ghostMeasurements.leg.radius,
+	ghostMeasurements.leg.widthSegments,
+	ghostMeasurements.leg.heightSegments,
+	ghostMeasurements.leg.phiStart,
+	ghostMeasurements.leg.phiLength,
+	ghostMeasurements.leg.thetaStart,
+	ghostMeasurements.leg.thetaLength
+);
 const bodyGeometry = new THREE.CylinderGeometry(1, 1, 2);
 
 const ghostDome = new THREE.Mesh(domeGeometry, ghostMaterial);
 ghostDome.position.y = 1;
 
 const ghostBody = new THREE.Mesh(bodyGeometry, ghostMaterial);
-ghosts.add(ghostDome, ghostBody);
+
+const legs = new THREE.Group();
+const legNumber = 8;
+for (let i = 0; i < legNumber; i++) {
+	const ghostLeg = new THREE.Mesh(
+		legGeometry,
+		new THREE.MeshStandardMaterial({
+			side: THREE.DoubleSide,
+		})
+	);
+
+	ghostLeg.rotation.x = Math.PI;
+	ghostLeg.position.x = Math.cos(((2 * Math.PI) / legNumber) * i) * 0.75;
+	ghostLeg.position.z = Math.sin(((2 * Math.PI) / legNumber) * i) * 0.75;
+	ghostLeg.position.y = -1;
+
+	legs.add(ghostLeg);
+}
+
+ghosts.add(ghostDome, ghostBody, legs);
+
+console.log(legs);
 
 const ambientLight = new THREE.AmbientLight("#fff", 1);
 scene.add(ambientLight);
