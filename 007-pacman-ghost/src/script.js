@@ -11,7 +11,6 @@ const size = {
 
 // To create a half-sphere, you typically adjust the thetaLength parameter.
 // Math.PI represents 180 degrees, which is half of a full circle (2 * Math.PI).
-
 const ghostMeasurements = {
 	dome: {
 		radius: 1,
@@ -51,6 +50,45 @@ const ghostMeasurements = {
 	},
 };
 
+const ghosts = [
+	{
+		color: "#cc7e14",
+		position: {
+			x: -4,
+		},
+		multiplier: 1,
+		speed: 0.02,
+		mesh: null,
+	},
+	{
+		color: "#4CABCA",
+		position: {
+			x: -1,
+		},
+		multiplier: 1,
+		speed: 0.017,
+		mesh: null,
+	},
+	{
+		color: "#C680A9",
+		position: {
+			x: 2,
+		},
+		multiplier: 1,
+		speed: 0.014,
+		mesh: null,
+	},
+	{
+		color: "#C31E13",
+		position: {
+			x: 5,
+		},
+		multiplier: 1,
+		speed: 0.011,
+		mesh: null,
+	},
+];
+
 const gui = new GUI({
 	title: "boo",
 });
@@ -58,8 +96,6 @@ const scene = new THREE.Scene();
 scene.background = new THREE.Color("#002");
 
 // building the ghost
-const ghosts = new THREE.Group();
-scene.add(ghosts);
 
 const domeGeometry = new THREE.SphereGeometry(
 	ghostMeasurements.dome.radius,
@@ -116,15 +152,13 @@ const buildGhost = (color) => {
 
 	// legs
 	const legs = new THREE.Group();
+	const legMaterial = new THREE.MeshStandardMaterial({
+		side: THREE.DoubleSide,
+		color,
+	});
 	const legNumber = 8;
 	for (let i = 0; i < legNumber; i++) {
-		const ghostLeg = new THREE.Mesh(
-			legGeometry,
-			new THREE.MeshStandardMaterial({
-				side: THREE.DoubleSide,
-				color,
-			})
-		);
+		const ghostLeg = new THREE.Mesh(legGeometry, legMaterial);
 
 		ghostLeg.rotation.x = Math.PI;
 		ghostLeg.position.x = Math.cos(((2 * Math.PI) / legNumber) * i) * 0.75;
@@ -196,23 +230,19 @@ const buildGhost = (color) => {
 	return newGhost;
 };
 
-const ghost1 = buildGhost("#cc7e14");
-const ghost2 = buildGhost("#4CABCA");
-const ghost3 = buildGhost("#C680A9");
-const ghost4 = buildGhost("#C31E13");
+for (const i in ghosts) {
+	const ghost = buildGhost(ghosts[i].color);
+	ghost.position.x = ghosts[i].position.x;
 
-ghost1.position.x = -4;
-ghost2.position.x = -1;
-ghost3.position.x = 2;
-ghost4.position.x = 5;
+	ghosts[i].mesh = ghost;
+	scene.add(ghost);
+}
 
-ghosts.add(ghost1, ghost2, ghost3, ghost4);
-
-const ambientLight = new THREE.AmbientLight("#fff", 4);
+const ambientLight = new THREE.AmbientLight("#fff", 3);
 scene.add(ambientLight);
 
 const camera = new THREE.PerspectiveCamera(75, size.width / size.height);
-camera.position.z = 8;
+camera.position.z = 10;
 camera.position.x = -0.5;
 scene.add(camera);
 
@@ -223,10 +253,13 @@ const renderer = new THREE.WebGLRenderer({ canvas });
 renderer.setSize(size.width, size.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-const clock = new THREE.Clock();
 const tick = () => {
-	const t = clock.getElapsedTime();
-
+	for (const ghost of ghosts) {
+		if (ghost.mesh.position.y > 2 || ghost.mesh.position.y < -1) {
+			ghost.multiplier *= -1;
+		}
+		ghost.mesh.position.y += ghost.speed * ghost.multiplier;
+	}
 	controls.update();
 	renderer.render(scene, camera);
 
