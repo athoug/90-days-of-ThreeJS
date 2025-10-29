@@ -89,9 +89,10 @@ const ghosts = [
 	},
 ];
 
-const gui = new GUI({
-	title: "boo",
-});
+// const gui = new GUI({
+// 	title: "boo",
+// });
+
 const scene = new THREE.Scene();
 scene.background = new THREE.Color("#002");
 
@@ -144,6 +145,8 @@ const buildGhost = (color) => {
 
 	const ghostMaterial = new THREE.MeshStandardMaterial({
 		color,
+		metalness: 0.1,
+		roughness: 0.5,
 	});
 	const ghostDome = new THREE.Mesh(domeGeometry, ghostMaterial);
 	ghostDome.position.y = 1;
@@ -155,6 +158,8 @@ const buildGhost = (color) => {
 	const legMaterial = new THREE.MeshStandardMaterial({
 		side: THREE.DoubleSide,
 		color,
+		metalness: 0.1,
+		roughness: 0.5,
 	});
 	const legNumber = 8;
 	for (let i = 0; i < legNumber; i++) {
