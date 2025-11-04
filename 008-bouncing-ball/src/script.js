@@ -35,7 +35,7 @@ const size = {
 };
 
 const ballTypes = {
-	selected: "basketball",
+	selected: "beachball",
 	basketball: {
 		map: basketTexture,
 	},
@@ -58,7 +58,7 @@ const scene = new THREE.Scene();
 scene.background = new THREE.Color("#fff");
 
 const plane = new THREE.Mesh(
-	new THREE.PlaneGeometry(5, 5),
+	new THREE.PlaneGeometry(5, 5, 100, 100),
 	new THREE.MeshStandardMaterial({
 		side: THREE.DoubleSide,
 		color: new THREE.Color(
@@ -73,11 +73,19 @@ plane.receiveShadow = true;
 plane.rotation.x = -Math.PI * 0.5;
 
 const ball = new THREE.Mesh(
-	new THREE.SphereGeometry(size.ball.basketball, 32, 16),
+	new THREE.SphereGeometry(size.ball[ballTypes.selected], 32, 16),
 	new THREE.MeshStandardMaterial({
-		map: basketTexture,
+		// map: basketTexture,
 	})
 );
+
+for (const [key, value] of Object.entries(ballTypes[ballTypes.selected])) {
+	ball.material[key] = value;
+	if (key === "alphaMap") {
+		ball.material.transparent = true;
+	}
+}
+
 ball.position.y = size.ball.basketball;
 ball.castShadow = true;
 ball.receiveShadow = true;
