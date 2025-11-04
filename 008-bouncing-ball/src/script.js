@@ -1,23 +1,7 @@
 import * as THREE from "three";
 import GUI from "lil-gui";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-
-const textureLoader = new THREE.TextureLoader();
-const basketTexture = textureLoader.load("./balls/basketBall.png");
-const tennisColor = textureLoader.load("./balls/tennis/NewTennisBallColor.jpg");
-const tennisBump = textureLoader.load("./balls/tennis/TennisBallBump.jpg");
-const baseColor = textureLoader.load("./balls/baseball/SoftballColor.jpg");
-const baseBump = textureLoader.load("./balls/baseball/SoftballBump.jpg");
-
-const beachColor = textureLoader.load("./balls/beachball/BeachBallColor.jpg");
-const beachTransparent = textureLoader.load(
-	"./balls/beachball/BeachBallTransp.jpg"
-);
-
-basketTexture.colorSpace = THREE.SRGBColorSpace;
-tennisColor.colorSpace = THREE.SRGBColorSpace;
-baseColor.colorSpace = THREE.SRGBColorSpace;
-beachColor.colorSpace = THREE.SRGBColorSpace;
+import { ballTypes, planeTypes } from "./textures";
 
 const canvas = document.querySelector("canvas.webgl");
 const gui = new GUI({
@@ -34,38 +18,14 @@ const size = {
 	},
 };
 
-const ballTypes = {
-	selected: "beachball",
-	basketball: {
-		map: basketTexture,
-	},
-	tennisball: {
-		map: tennisColor,
-		bumpMap: tennisBump,
-	},
-	baseball: {
-		map: baseColor,
-		bumpMap: baseBump,
-	},
-	beachball: {
-		map: beachColor,
-		alphaMap: beachTransparent,
-	},
-};
-
 const scene = new THREE.Scene();
-// scene.background = new THREE.Color("#001");
-scene.background = new THREE.Color("#fff");
+scene.background = new THREE.Color("#001");
+// scene.background = new THREE.Color("#fff");
 
 const plane = new THREE.Mesh(
 	new THREE.PlaneGeometry(5, 5, 100, 100),
 	new THREE.MeshStandardMaterial({
 		side: THREE.DoubleSide,
-		color: new THREE.Color(
-			0.00392156862745098,
-			0.00392156862745098,
-			0.01568627450980392
-		),
 	})
 );
 
@@ -74,24 +34,17 @@ plane.rotation.x = -Math.PI * 0.5;
 
 const ball = new THREE.Mesh(
 	new THREE.SphereGeometry(size.ball[ballTypes.selected], 32, 16),
-	new THREE.MeshStandardMaterial({
-		// map: basketTexture,
-	})
+	new THREE.MeshStandardMaterial()
 );
 
-for (const [key, value] of Object.entries(ballTypes[ballTypes.selected])) {
-	ball.material[key] = value;
-	if (key === "alphaMap") {
-		ball.material.transparent = true;
-	}
-}
-
-ball.position.y = size.ball.basketball;
+ball.position.y = size.ball[ballTypes.selected];
 ball.castShadow = true;
 ball.receiveShadow = true;
 
+updateMaterials(ballTypes.selected, true);
 scene.add(plane, ball);
 
+// lighting
 const ambientLight = new THREE.AmbientLight("#fff", 1);
 scene.add(ambientLight);
 
@@ -181,18 +134,30 @@ window.addEventListener("resize", () => {
 	renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 });
 
-const updateBall = (e) => {
-	ball.geometry.dispose();
-	ball.geometry = new THREE.SphereGeometry(size.ball[e], 32, 16);
-	ball.position.y = size.ball[e];
+function updateMaterials(e, firstRender = false) {
+	if (!firstRender) {
+		ball.geometry.dispose();
+		ball.geometry = new THREE.SphereGeometry(size.ball[e], 32, 16);
+		ball.position.y = size.ball[e];
+	}
 
 	for (const [key, value] of Object.entries(ballTypes[e])) {
 		ball.material[key] = value;
 		if (key === "alphaMap") {
 			ball.material.transparent = true;
+		} else {
+			ball.material.transparent = false;
 		}
 	}
-};
+
+	for (const [key, value] of Object.entries(planeTypes[ballTypes.selected])) {
+		plane.material[key] = value;
+		if (key === "displacementMap") {
+			plane.material.displacementScale = 0.3;
+			plane.material.displacementBias = -0.2;
+		}
+	}
+}
 
 // gui controls
 gui
@@ -205,9 +170,8 @@ gui
 	.name("ball type")
 	.onChange((e) => {
 		ballTypes.selected = e.replace(" ", "");
-		console.log(ballTypes.selected);
 
-		updateBall(ballTypes.selected);
+		updateMaterials(ballTypes.selected);
 	});
 
 gui.add(ballControls, "r").min(1).max(2).step(0.01).name("ball radius");
