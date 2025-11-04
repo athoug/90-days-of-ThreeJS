@@ -6,13 +6,18 @@ const textureLoader = new THREE.TextureLoader();
 const basketTexture = textureLoader.load("./balls/basketBall.png");
 const tennisColor = textureLoader.load("./balls/tennis/NewTennisBallColor.jpg");
 const tennisBump = textureLoader.load("./balls/tennis/TennisBallBump.jpg");
-
 const baseColor = textureLoader.load("./balls/baseball/SoftballColor.jpg");
 const baseBump = textureLoader.load("./balls/baseball/SoftballBump.jpg");
+
+const beachColor = textureLoader.load("./balls/beachball/BeachBallColor.jpg");
+const beachTransparent = textureLoader.load(
+	"./balls/beachball/BeachBallTransp.jpg"
+);
 
 basketTexture.colorSpace = THREE.SRGBColorSpace;
 tennisColor.colorSpace = THREE.SRGBColorSpace;
 baseColor.colorSpace = THREE.SRGBColorSpace;
+beachColor.colorSpace = THREE.SRGBColorSpace;
 
 const canvas = document.querySelector("canvas.webgl");
 const gui = new GUI({
@@ -23,6 +28,7 @@ const size = {
 	height: window.innerHeight,
 	ball: {
 		basketball: 0.45,
+		beachball: 0.45,
 		tennisball: 0.12,
 		baseball: 0.14,
 	},
@@ -40,6 +46,10 @@ const ballTypes = {
 	baseball: {
 		map: baseColor,
 		bumpMap: baseBump,
+	},
+	beachball: {
+		map: beachColor,
+		alphaMap: beachTransparent,
 	},
 };
 
@@ -170,12 +180,20 @@ const updateBall = (e) => {
 
 	for (const [key, value] of Object.entries(ballTypes[e])) {
 		ball.material[key] = value;
+		if (key === "alphaMap") {
+			ball.material.transparent = true;
+		}
 	}
 };
 
 // gui controls
 gui
-	.add(ballTypes, "selected", ["basketball", "tennis ball", "baseball"])
+	.add(ballTypes, "selected", [
+		"basketball",
+		"tennis ball",
+		"baseball",
+		"beach ball",
+	])
 	.name("ball type")
 	.onChange((e) => {
 		ballTypes.selected = e.replace(" ", "");
