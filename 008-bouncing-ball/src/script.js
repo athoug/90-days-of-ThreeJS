@@ -7,8 +7,12 @@ const basketTexture = textureLoader.load("./balls/basketBall.png");
 const tennisColor = textureLoader.load("./balls/tennis/NewTennisBallColor.jpg");
 const tennisBump = textureLoader.load("./balls/tennis/TennisBallBump.jpg");
 
+const baseColor = textureLoader.load("./balls/baseball/SoftballColor.jpg");
+const baseBump = textureLoader.load("./balls/baseball/SoftballBump.jpg");
+
 basketTexture.colorSpace = THREE.SRGBColorSpace;
 tennisColor.colorSpace = THREE.SRGBColorSpace;
+baseColor.colorSpace = THREE.SRGBColorSpace;
 
 const canvas = document.querySelector("canvas.webgl");
 const gui = new GUI({
@@ -20,6 +24,7 @@ const size = {
 	ball: {
 		basketball: 0.45,
 		tennisball: 0.12,
+		baseball: 0.14,
 	},
 };
 
@@ -32,10 +37,15 @@ const ballTypes = {
 		map: tennisColor,
 		bumpMap: tennisBump,
 	},
+	baseball: {
+		map: baseColor,
+		bumpMap: baseBump,
+	},
 };
 
 const scene = new THREE.Scene();
-scene.background = new THREE.Color("#001");
+// scene.background = new THREE.Color("#001");
+scene.background = new THREE.Color("#fff");
 
 const plane = new THREE.Mesh(
 	new THREE.PlaneGeometry(5, 5),
@@ -111,6 +121,7 @@ const ballControls = {
 	speed: 0.04,
 	direction: 1,
 	rotationSpeed: 0.01,
+	bounceHeight: 2,
 };
 
 const timer = new THREE.Timer();
@@ -120,7 +131,10 @@ const tick = () => {
 	timer.update();
 	const t = timer.getElapsed();
 
-	if (ball.position.y > 2 || ball.position.y < 0.45) {
+	if (
+		ball.position.y > ballControls.bounceHeight ||
+		ball.position.y < size.ball[ballTypes.selected]
+	) {
 		ballControls.direction *= -1;
 	}
 	ball.position.x = Math.cos(t) * ballControls.r;
@@ -149,6 +163,16 @@ window.addEventListener("resize", () => {
 	renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 });
 
+const updateBall = (e) => {
+	ball.geometry.dispose();
+	ball.geometry = new THREE.SphereGeometry(size.ball[e], 32, 16);
+	ball.position.y = size.ball[e];
+
+	for (const [key, value] of Object.entries(ballTypes[e])) {
+		ball.material[key] = value;
+	}
+};
+
 // gui controls
 gui
 	.add(ballTypes, "selected", ["basketball", "tennis ball", "baseball"])
@@ -176,12 +200,9 @@ gui
 	.step(0.001)
 	.name("ball rotation");
 
-const updateBall = (e) => {
-	ball.geometry.dispose();
-	ball.geometry = new THREE.SphereGeometry(size.ball[e], 32, 16);
-	ball.position.y = size.ball[e];
-
-	for (const [key, value] of Object.entries(ballTypes[e])) {
-		ball.material[key] = value;
-	}
-};
+gui
+	.add(ballControls, "bounceHeight")
+	.min(1)
+	.max(3)
+	.step(0.001)
+	.name("bounce height");
