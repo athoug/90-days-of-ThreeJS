@@ -25,6 +25,7 @@ const particlesData = {
 	radius: 10,
 	color: "#ff5395",
 	texture: data[textureNames[0]],
+	size: 0.02,
 };
 
 const positions = new Float32Array(particlesData.count * 3); // multiplied by 3 because each point holds 3 values the x, y and z of a point
@@ -37,10 +38,12 @@ geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
 
 // 2. a point material
 const material = new THREE.PointsMaterial({
-	size: 0.02,
+	size: particlesData.size,
 	sizeAttenuation: true,
 	color: particlesData.color,
-	map: particlesData.texture,
+	transparent: true,
+	alphaMap: particlesData.texture,
+	depthWrite: false,
 });
 
 // 3. points
@@ -83,4 +86,20 @@ window.addEventListener("resize", () => {
 
 	renderer.setSize(size.with, size.height);
 	renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+});
+
+// setting up the GUI
+gui
+	.add(particlesData, "size")
+	.onChange((v) => {
+		particles.material.size = v;
+	})
+	.min(0.0001)
+	.max(2)
+	.step(0.001)
+	.name("particle size");
+
+gui.addColor(particlesData, "color").onChange((v) => {
+	const color = new THREE.Color(v);
+	particles.material.color = color;
 });
