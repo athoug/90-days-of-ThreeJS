@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import GUI from "lil-gui";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { data, textureNames } from "./textures";
 
 const canvas = document.querySelector("canvas.webgl");
 const size = {
@@ -22,6 +23,8 @@ const scene = new THREE.Scene();
 const particlesData = {
 	count: 5000,
 	radius: 10,
+	color: "#ff5395",
+	texture: data[textureNames[0]],
 };
 
 const positions = new Float32Array(particlesData.count * 3); // multiplied by 3 because each point holds 3 values the x, y and z of a point
@@ -36,7 +39,8 @@ geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
 const material = new THREE.PointsMaterial({
 	size: 0.02,
 	sizeAttenuation: true,
-	color: "#ff5395",
+	color: particlesData.color,
+	map: particlesData.texture,
 });
 
 // 3. points

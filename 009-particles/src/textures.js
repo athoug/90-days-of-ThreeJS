@@ -8,9 +8,16 @@ const textures = {
 	bigStar: "particles/5.png",
 	halfMoon: "particles/6.png",
 	target: "particles/7.png",
+	brightStar: "particles/8.png",
+	thinStar: "particles/9.png",
+	heart: "particles/10.png",
+	cartoonStar: "particles/11.png",
+	line: "particles/12.png",
+	thickLine: "particles/13.png",
 };
 
-const data = {};
+export const data = {};
+export const textureNames = [];
 
 const textureLoader = new THREE.TextureLoader();
 
@@ -18,6 +25,5 @@ for (let key in textures) {
 	const txt = textureLoader.load(textures[key]);
 
 	data[key] = txt;
+	textureNames.push(key);
 }
-
-console.log(data);
