@@ -19,11 +19,22 @@ const scene = new THREE.Scene();
 // for particles I need 3 things
 
 // 1. a geometry
-const geometry = new THREE.SphereGeometry(1, 32, 32);
+const particlesData = {
+	count: 5000,
+	radius: 10,
+};
+
+const positions = new Float32Array(particlesData.count * 3); // multiplied by 3 because each point holds 3 values the x, y and z of a point
+
+for (let i = 0; i < positions.length; i++) {
+	positions[i] = (Math.random() - 0.5) * particlesData.radius;
+}
+const geometry = new THREE.BufferGeometry();
+geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
 
 // 2. a point material
 const material = new THREE.PointsMaterial({
-	size: 0.05,
+	size: 0.02,
 	sizeAttenuation: true,
 });
 
