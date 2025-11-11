@@ -36,6 +36,7 @@ geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
 const material = new THREE.PointsMaterial({
 	size: 0.02,
 	sizeAttenuation: true,
+	color: "#ff5395",
 });
 
 // 3. points
