@@ -16,11 +16,20 @@ const gui = new GUI({
 // --- start ---
 const scene = new THREE.Scene();
 
-const mesh = new THREE.Mesh(
-	new THREE.BoxGeometry(),
-	new THREE.MeshBasicMaterial()
-);
-scene.add(mesh);
+// for particles I need 3 things
+
+// 1. a geometry
+const geometry = new THREE.SphereGeometry(1, 32, 32);
+
+// 2. a point material
+const material = new THREE.PointsMaterial({
+	size: 0.05,
+	sizeAttenuation: true,
+});
+
+// 3. points
+const particles = new THREE.Points(geometry, material);
+scene.add(particles);
 
 const camera = new THREE.PerspectiveCamera(
 	75,
