@@ -6,14 +6,14 @@ const textures = {
 	distortedCircle: "particles/3.png",
 	star: "particles/4.png",
 	bigStar: "particles/5.png",
-	halfMoon: "particles/6.png",
+	bubble: "particles/6.png",
 	target: "particles/7.png",
 	brightStar: "particles/8.png",
 	thinStar: "particles/9.png",
 	heart: "particles/10.png",
 	cartoonStar: "particles/11.png",
-	line: "particles/12.png",
-	thickLine: "particles/13.png",
+	rainDrop: "particles/12.png",
+	thickRainDrop: "particles/13.png",
 };
 
 export const data = {};

@@ -16,6 +16,7 @@ const gui = new GUI({
 
 // --- start ---
 const scene = new THREE.Scene();
+scene.background = new THREE.Color("#fff");
 
 // for particles I need 3 things
 
@@ -28,7 +29,7 @@ const particlesData = {
 	size: 0.02,
 };
 
-const positions = new Float32Array(particlesData.count * 3); // multiplied by 3 because each point holds 3 values the x, y and z of a point
+let positions = new Float32Array(particlesData.count * 3); // multiplied by 3 because each point holds 3 values the x, y and z of a point
 
 for (let i = 0; i < positions.length; i++) {
 	positions[i] = (Math.random() - 0.5) * particlesData.radius;
@@ -99,7 +100,27 @@ gui
 	.step(0.001)
 	.name("particle size");
 
+gui
+	.add(particlesData, "count")
+	.onChange((v) => {
+		positions = new Float32Array(v * 3);
+
+		for (let i = 0; i < positions.length; i++) {
+			positions[i] = (Math.random() - 0.5) * particlesData.radius;
+		}
+
+		geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+	})
+	.min(1)
+	.max(20000)
+	.step(1)
+	.name("particle count");
+
 gui.addColor(particlesData, "color").onChange((v) => {
 	const color = new THREE.Color(v);
 	particles.material.color = color;
+});
+
+gui.add(particlesData, "texture", textureNames).onChange((v) => {
+	particles.material.alphaMap = data[v];
 });
