@@ -16,7 +16,7 @@ const gui = new GUI({
 
 // --- start ---
 const scene = new THREE.Scene();
-scene.background = new THREE.Color("#fff");
+scene.background = new THREE.Color("#001");
 
 // for particles I need 3 things
 
@@ -24,15 +24,18 @@ scene.background = new THREE.Color("#fff");
 const particlesData = {
 	count: 5000,
 	radius: 10,
-	color: "#ff5395",
+	color: "#C5E2F7",
 	texture: data[textureNames[0]],
 	size: 0.02,
+	originalPosition: [],
 };
 
 let positions = new Float32Array(particlesData.count * 3); // multiplied by 3 because each point holds 3 values the x, y and z of a point
 
 for (let i = 0; i < positions.length; i++) {
-	positions[i] = (Math.random() - 0.5) * particlesData.radius;
+	const position = Math.random() - 0.5;
+	positions[i] = position * particlesData.radius;
+	particlesData.originalPosition.push(position);
 }
 const geometry = new THREE.BufferGeometry();
 geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
@@ -71,6 +74,10 @@ const clock = new THREE.Clock();
 const tick = () => {
 	const t = clock.getElapsedTime();
 
+	particles.rotation.y = t * 0.2;
+	particles.rotation.x = t * 0.1;
+	particles.rotation.x = t * 0.05;
+
 	controls.update();
 	renderer.render(scene, camera);
 
@@ -102,7 +109,7 @@ gui
 
 gui
 	.add(particlesData, "count")
-	.onChange((v) => {
+	.onFinishChange((v) => {
 		positions = new Float32Array(v * 3);
 
 		for (let i = 0; i < positions.length; i++) {
@@ -115,6 +122,20 @@ gui
 	.max(20000)
 	.step(1)
 	.name("particle count");
+
+gui
+	.add(particlesData, "radius")
+	.onFinishChange((v) => {
+		for (let i = 0; i < positions.length; i++) {
+			positions[i] = particlesData.originalPosition[i] * v;
+		}
+
+		geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+	})
+	.min(0.1)
+	.max(100)
+	.step(0.01)
+	.name("particle spread");
 
 gui.addColor(particlesData, "color").onChange((v) => {
 	const color = new THREE.Color(v);
